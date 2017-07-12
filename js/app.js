@@ -102,7 +102,7 @@ function cactusGenerator () {
 
 }
 
-function checkForCollision(objectPosW, pos, floor) {
+function checkForCollision(objectPosW, pos, floor) { // tested
   // ctx.fillStyle = 'purple'
   // ctx.fillRect(objectPosW +2,floor,5,5);
   // ctx.fillRect(objectPosW +32,floor,5,5);
@@ -121,6 +121,8 @@ function checkForCollision(objectPosW, pos, floor) {
   if((objectPosW +32 >= 50 -2 &&  objectPosW+2 <= 50 + 48) ||
     objectPosW +2 >= 50+48 && objectPosW+32 <= 50 -2)
     return true
+
+  return false
 }
 
 function drawPersonagem(floor, jumpSpeed){
@@ -147,7 +149,7 @@ function drawPersonagem(floor, jumpSpeed){
 }
 
 
-function sleep (ms) {
+function sleep (ms) { // tested
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
