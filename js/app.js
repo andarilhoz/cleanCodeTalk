@@ -20,24 +20,28 @@ var firstCactus
 var secondCactus
 
 document.addEventListener('keydown', function (e) {
-  if(e.code == 'Space'){
+    if(e.code == 'Space')
+        onSpace(loop)
+})
+
+function onSpace(fn) {
     if(podePula && !gameOver) jumping = true;
     if(gameOver){
-       jumping = false
-       actualPos = 0
-       gameOver = false;
-       cactusPos = initialCactusPos
-       if(localStorage.getItem('HighScore') < difference)
+        jumping = false
+        actualPos = 0
+        gameOver = false;
+        // cactusPos = initialCactusPos
+        
+        if(localStorage.getItem('HighScore') < difference)
         localStorage.setItem('HighScore',difference)
-      
-       HighScore = localStorage.getItem('HighScore')
-       date = new Date()
-       loop()
+        
+        HighScore = localStorage.getItem('HighScore')
+        date = new Date()
+        fn()
     }
-  
+
     podePula = false
-  }
-})
+}
 
 function draw () {
   canvas.width = window.innerWidth
@@ -170,4 +174,4 @@ async function loop () {
   }
 }
 
-//loop()
+loop()
