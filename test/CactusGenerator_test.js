@@ -9,7 +9,7 @@ define(function(require){
         strokeRect: () => {},
         fillText: () => {}
     }
-
+    Manager.canvas = {height: 400}
     describe('CactusGenerator', () => {
         it('should return 2 when used updatePos(2) and getPos()', () => {
             let cactusTest = new CactusGenerator()
@@ -26,11 +26,13 @@ define(function(require){
             cactusFirstTest.getPos().should.be.equal(2)
         })
 
-        it('should set floor as canvas.height/2', () => {
-            let cactusTest = new CactusGenerator()
-            cactusTest.floor = 0
-            cactusTest.update(ctxTest)
-            cactusTest.floor.should.be.equal(Manager.canvas.height / 2)
+        it('should set a number greater or equal than 200 to secondCactusPos', () => {
+            for(i=0;i<=1000;i++){
+                Manager.secondCactus.updatePos(0) 
+                let a = Manager.secondCactus.getRandomSpawn()
+                Manager.secondCactus.updatePos(a)
+                Manager.secondCactus.getPos().should.be.greaterThan(199)
+            }
         })
     })
 })

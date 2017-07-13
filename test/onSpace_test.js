@@ -1,21 +1,22 @@
 define(function(require){
+    Manager.player = new Player()
     describe('On space keyup', () => {
         it('should set jumping equals true', () => {
-            Manager.jumping = false
+            Manager.player.jumping = false
             onSpace()
-            Manager.jumping.should.be.equal(true)
+            Manager.player.jumping.should.be.equal(true)
         })
 
         it('should not change jumping state if its true', () => {
-            Manager.jumping = true
+            Manager.player.jumping = true
             onSpace()
-            Manager.jumping.should.be.equal(true)
+            Manager.player.jumping.should.be.equal(true)
         })
 
-        it('should set podPula as false', () => {
-            Manager.canJump = true
+        it('should set canJump as false', () => {
+            Manager.player.canJump = true
             onSpace()
-            Manager.canJump.should.be.equal(false)
+            Manager.player.canJump.should.be.equal(false)
         })
 
         it('should set gameOver as false when gameOver is true', () => {
@@ -26,19 +27,19 @@ define(function(require){
         })
 
         it('should set jumping to false when gameOver is true', () => {
-            Manager.jumping = true
+            Manager.player.jumping = true
             Manager.gameOver = true
             fn = () => {}
             onSpace(fn)
-            Manager.jumping.should.be.equal(false)
+            Manager.player.jumping.should.be.equal(false)
         })
 
         it('should set actualPos to 0 when gameOver is true', () => {
-            Manager.personagemAltitude = 500
+            Manager.player.personagemAltitude = 500
             Manager.gameOver = true
             fn = () => {}
             onSpace(fn)
-            Manager.personagemAltitude.should.be.equal(0)
+            Manager.player.personagemAltitude.should.be.equal(0)
         })
 
         it('should change high score if difference val is greater and gameOver is true', () => {

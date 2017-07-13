@@ -15,44 +15,46 @@ define(function(require){
         },
         fillText: () => {}
     }
-    describe('Personagem', () => {
-        it('Should be at pos 666 when given in floor paramter, and Manager.personagemAltitude is 0', () => {
-            Manager.personagemAltitude = 0
-            personagem(666,ctxTest)
-            Manager.personagemAltitude.should.be.equal(666)
+    Manager.player  = new Player ()
+    describe('Personagem ', () => {
+        it('Should be at pos 666 when given in floor paramter, and personagemAltitude is 0', () => {
+            Manager.floor = 666
+            Manager.player.update()
+            Manager.player.personagemAltitude.should.be.equal(666)
         })
 
-        it('relative pos should be 0, when not Manager.jumping and not falling', () => {
-            Manager.jumping  = false
-            Manager.canJump = false
-            Manager.personagemAltitude = 999
-            personagem(666,ctxTest)
-            Manager.personagemAltitude.should.be.equal(666)
-            Manager.canJump.should.be.true
+        it('relative pos should be 0, when not jumping and not falling', () => {
+            Manager.player.jumping  = false
+            Manager.player.canJump = false
+            Manager.floor = 666
+            Manager.player.personagemAltitude = 999
+            Manager.player.update()
+            Manager.player.personagemAltitude.should.be.equal(666)
+            Manager.player.canJump.should.be.true
         })        
 
-        it('should update ctx with y greater than floor value when Manager.jumping', () => {
-            Manager.jumping = true
+        it('should update ctx with y greater than floor value when jumping', () => {
+            Manager.player.jumping = true
             ctxTest.y = 0
-            Manager.personagemAltitude = 0
-            personagem(666,ctxTest)
+            Manager.player.personagemAltitude = 0
+            Manager.player.update()
             ctxTest.y.should.be.lessThan(666)
         })
 
-        it('should set Manager.jumping as false when Manager.personagemAltitude hit maxJumpHeight', () => {
-            Manager.personagemAltitude = floor - Manager.maxJumpHeight 
-            Manager.jumping = true
-            personagem(666,ctxTest)
-            Manager.jumping.should.be.false
+        it('should set jumping as false when personagemAltitude hit maxJumpHeight', () => {
+            Manager.player.personagemAltitude = Manager.floor - Manager.player.maxJumpHeight 
+            Manager.player.jumping = true
+            Manager.player.update()
+            Manager.player.jumping.should.be.false
 
         })
 
-        it('should update ctx with y lower than Manager.personagemAltitude given when not Manager.jumping and Manager.personagemAltitude gT floor', () => {
-            Manager.personagemAltitude = 400
-            Manager.jumpSpeed = 50
-            Manager.jumping = false
-            personagem(666,ctxTest)
-            Manager.personagemAltitude.should.be.greaterThan(400)
+        it('should update ctx with y lower than personagemAltitude given when not jumping and personagemAltitude gT floor', () => {
+            Manager.player.personagemAltitude = 400
+            Manager.player.jumpSpeed = 50
+            Manager.player.jumping = false
+            Manager.player.update()
+            Manager.player.personagemAltitude.should.be.greaterThan(400)
         })
 
     })

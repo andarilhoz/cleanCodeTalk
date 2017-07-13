@@ -4,17 +4,11 @@ Manager = function(){
   let initialGameTime = new Date()
   let timeInSecondsSinceStart = 0
   let sleepTime = 20
-  let jumping = false
-  let maxJumpHeight = 250
-  let personagemAltitude = 0
-  let playerSpeed = 5
-  let canJump = true
   let gameOver = false
   let highScore = localStorage.getItem('HighScore')
-  let jumpSpeed = 50
   let firstCactus
   let secondCactus
-  let floor
+  let floor = canvas.height / 2
 
   return {
     canvas,
@@ -22,14 +16,8 @@ Manager = function(){
     initialGameTime,
     timeInSecondsSinceStart,
     sleepTime,
-    jumping,
-    maxJumpHeight,
-    personagemAltitude,
-    playerSpeed,
-    canJump,
     gameOver,
     highScore,
-    jumpSpeed,
     firstCactus,
     secondCactus,
     floor,
@@ -41,10 +29,11 @@ document.addEventListener('keydown', function (e) {
 })
 
 function onSpace (fn) {
-  if (Manager.canJump && !Manager.gameOver) Manager.jumping = true
+  if (Manager.player.canJump && !Manager.gameOver) 
+    Manager.player.jumping = true
   if (Manager.gameOver) {
-    Manager.jumping = false
-    Manager.personagemAltitude = 0
+    Manager.player.jumping = false
+    Manager.player.personagemAltitude = 0
     Manager.gameOver = false
 
     if (localStorage.getItem('HighScore') < Manager.timeInSecondsSinceStart) { localStorage.setItem('HighScore', Manager.timeInSecondsSinceStart) }
@@ -54,16 +43,10 @@ function onSpace (fn) {
     fn()
   }
 
-  Manager.canJump = false
+  Manager.player.canJump = false
 }
 
-function random (seed) {
-  var x = Math.sin(seed++) * 10000
-  return x - Math.floor(x)
-}
-
-function draw (ctx, personagem, firstCactus, secondCactus, seed) {
-  seed = seed || Math.floor(Math.random() * 100)
+function draw (ctx) {
   Manager.canvas.width = window.innerWidth
   Manager.canvas.height = window.innerHeight
 
@@ -78,13 +61,17 @@ function draw (ctx, personagem, firstCactus, secondCactus, seed) {
   ctx.moveTo(30, Manager.canvas.height / 2 + 70)
   ctx.lineTo(Manager.canvas.width - 30, Manager.canvas.height / 2 + 70)
   ctx.stroke()
-  if (firstCactus.getPos() <= 0) { firstCactus.updatePos(Math.floor(random(seed) * (Manager.canvas.width - secondCactus.getPos() + 200) + secondCactus.getPos() + 200)) }
+  if (Manager.firstCactus.getPos() <= 0) { 
+    Manager.firstCactus.updatePos(Manager.firstCactus.getRandomSpawn())
+  }
 
-  firstCactus.update(ctx)
+  Manager.firstCactus.update(ctx)
 
-  if (secondCactus.getPos() <= 0) { secondCactus.updatePos(Math.floor(random(seed) * (Manager.canvas.width - firstCactus.getPos() + 200) + firstCactus.getPos() + 200)) }
+  if (Manager.secondCactus.getPos() <= 0) { 
+    Manager.secondCactus.updatePos(Manager.secondCactus.getRandomSpawn())
+  }
 
-  secondCactus.update(ctx)
+  Manager.secondCactus.update(ctx)
 
   ctx.lineWidth = 1
   ctx.fillStyle = 'black'
@@ -93,29 +80,39 @@ function draw (ctx, personagem, firstCactus, secondCactus, seed) {
 
   ctx.fillText('HighScore: ' + Manager.highScore, Manager.canvas.width / 2, 100)
 
-  personagem(floor, ctx)
+  Manager.player.update()
 }
 
 function CactusGenerator () {
-  this.pos = 0
-  this.updatePos = function (val) {
+  let pos = 0
+  function updatePos (val) {
     this.pos = val
   }
-  this.getPos = function () {
-    return this.pos
+  function getPos () {
+    return this.pos 
   }
-  this.update = function (ctx) {
-    this.floor = Manager.canvas.height / 2
+  
+  function getRandomSpawn(seed){
+    let width = Manager.canvas.width || 200
+    return  Math.floor(Math.random() * (width -  200) + 200 ) 
+  }
+  
+  function update (ctx) {
     ctx.strokeStyle = 'green'
     ctx.lineWidth = 3
+    
+    this.pos = this.pos || getRandomSpawn(new Date())
+    ctx.strokeRect(this.pos -= Manager.player.playerSpeed, Manager.floor, 30, 70)
 
-    if (this.pos <= 0) { this.pos = Math.floor(Math.random() * (800 - 400 + 1) + 400) }
-
-    ctx.strokeRect(this.pos -= Manager.playerSpeed, this.floor, 30, 70)
-
-    if (checkForCollision(this.pos, Manager.personagemAltitude, this.floor)) {
+    if (checkForCollision(this.pos, Manager.player.personagemAltitude, Manager.floor)) {
       Manager.gameOver = true
     }
+  }
+  return {
+    getPos,
+    updatePos,
+    update,
+    getRandomSpawn
   }
 }
 
@@ -128,22 +125,48 @@ function checkForCollision (objectPosW, pos, floor) {
   return false
 }
 
-function personagem (floor, context) {
-  context.strokeStyle = 'red'
-  context.lineWidth = 5
-  let initialJumpSpeed = Manager.jumpSpeed
-  if (Manager.personagemAltitude == 0) { Manager.personagemAltitude = floor }
-  let relativePos = (floor - Manager.personagemAltitude)
+function Player(){
+  let jumping = false
+  let playerSpeed = 5
+  let maxJumpHeight = 250
+  let canJump = true
+  let personagemAltitude = Manager.floor
+  let jumpSpeed = 50
+  let relativePos = ( Manager.floor - this.personagemAltitude)
+  let playerFloor;
+  function update(){
+    Manager.canvasContext.strokeStyle = 'red'
+    Manager.canvasContext.lineWidth = 5
+    
+    this.personagemAltitude = this.personagemAltitude || Manager.floor
 
-  if (Manager.jumping && relativePos <= Manager.maxJumpHeight) { context.strokeRect(50, Manager.personagemAltitude -= Manager.jumpSpeed > 0 ? Manager.jumpSpeed -= 35 : 1, 50, 50) } else if (floor > Manager.personagemAltitude && !Manager.jumping) { context.strokeRect(50, Manager.personagemAltitude += Manager.jumpSpeed > 0 ? Manager.jumpSpeed -= 35 : 1, 50, 50) } else if (!Manager.jumping) {
-    context.strokeRect(50, floor, 50, 50)
-    Manager.personagemAltitude = floor
+    this.relativePos = (Manager.floor - this.personagemAltitude)
 
-    Manager.canJump = true
-    relativePos = (floor - Manager.personagemAltitude)
+    if (this.jumping && this.relativePos <= this.maxJumpHeight) { 
+      Manager.canvasContext.strokeRect(50, this.personagemAltitude -= this.jumpSpeed > 0 ? this.jumpSpeed -= 35 : 1, 50, 50)
+    } else if (Manager.floor > this.personagemAltitude && !this.jumping) { 
+      Manager.canvasContext.strokeRect(50, this.personagemAltitude += this.jumpSpeed > 0 ? this.jumpSpeed -= 35 : 1, 50, 50) 
+    } else if (!this.jumping) {
+      Manager.canvasContext.strokeRect(50, Manager.floor + 20, 50, 50)
+      this.personagemAltitude = Manager.floor
+
+      this.canJump = true
+      this.relativePos = (Manager.floor - this.personagemAltitude)
+    }
+    if (this.relativePos >= this.maxJumpHeight) { this.jumping = false }
+    this.jumpSpeed = 50
+
+  }  
+  return{
+    jumping,
+    playerSpeed,
+    maxJumpHeight,
+    personagemAltitude,
+    canJump,
+    jumpSpeed,
+    relativePos,
+    update
   }
-  if (relativePos >= Manager.maxJumpHeight) { Manager.jumping = false }
-  Manager.jumpSpeed = initialJumpSpeed
 }
 
 function sleep (ms) {
@@ -151,15 +174,17 @@ function sleep (ms) {
 }
 
 async function loop () {
-  firstCactus = new CactusGenerator()
-  secondCactus = new CactusGenerator()
+  Manager.firstCactus = new CactusGenerator()
+  Manager.secondCactus = new CactusGenerator()
+  Manager.player = new Player()
   while (!Manager.gameOver) {
     var current = new Date()
+    Manager.floor = canvas.height / 2
     Manager.timeInSecondsSinceStart = Math.floor((current - Manager.initialGameTime) / 1000)
 
-    draw(Manager.canvasContext, personagem, firstCactus, secondCactus)
+    draw(Manager.canvasContext)
 
-    await sleep(sleepTime)
+    await sleep(Manager.sleepTime)
   }
 }
 
