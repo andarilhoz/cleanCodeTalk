@@ -1,17 +1,16 @@
 
 var canvas = document.querySelector('#canvas') || {getContext: function () { return null }}
-var ctx = canvas.getContext('2d')
-var date = new Date()
-var difference = 0
-var fps = 20
+var canvasContext = canvas.getContext('2d')
+var initialGameTime = new Date()
+var timeInSecondsSinceStart = 0
+var sleepTime = 20
 var jumping = false
 var maxJumpHeight = 250
-var actualPos = 0
-var cactusSpeed = 5
-var podePula = true
-var relativePos = 0
+var personagemAltitude = 0
+var playerSpeed = 5
+var canJump = true
 var gameOver = false
-var HighScore = localStorage.getItem('HighScore')
+var highScore = localStorage.getItem('HighScore')
 var jumpSpeed = 50
 var firstCactus
 var secondCactus
@@ -22,20 +21,20 @@ document.addEventListener('keydown', function (e) {
 })
 
 function onSpace (fn) {
-  if (podePula && !gameOver) jumping = true
+  if (canJump && !gameOver) jumping = true
   if (gameOver) {
     jumping = false
-    actualPos = 0
+    personagemAltitude = 0
     gameOver = false
 
-    if (localStorage.getItem('HighScore') < difference) { localStorage.setItem('HighScore', difference) }
+    if (localStorage.getItem('HighScore') < timeInSecondsSinceStart) { localStorage.setItem('HighScore', timeInSecondsSinceStart) }
 
-    HighScore = localStorage.getItem('HighScore')
-    date = new Date()
+    highScore = localStorage.getItem('HighScore')
+    initialGameTime = new Date()
     fn()
   }
 
-  podePula = false
+  canJump = false
 }
 
 function random (seed) {
@@ -70,9 +69,9 @@ function draw (ctx, personagem, firstCactus, secondCactus, seed) {
   ctx.lineWidth = 1
   ctx.fillStyle = 'black'
   ctx.font = '30px Arial'
-  ctx.fillText('Time: ' + difference, canvas.width / 2 - 200, 100)
+  ctx.fillText('Time: ' + timeInSecondsSinceStart, canvas.width / 2 - 200, 100)
 
-  ctx.fillText('HighScore: ' + HighScore, canvas.width / 2, 100)
+  ctx.fillText('HighScore: ' + highScore, canvas.width / 2, 100)
 
   personagem(floor, ctx)
 }
@@ -92,9 +91,9 @@ function CactusGenerator () {
 
     if (this.pos <= 0) { this.pos = Math.floor(Math.random() * (800 - 400 + 1) + 400) }
 
-    ctx.strokeRect(this.pos -= cactusSpeed, this.floor, 30, 70)
+    ctx.strokeRect(this.pos -= playerSpeed, this.floor, 30, 70)
 
-    if (checkForCollision(this.pos, actualPos, this.floor)) {
+    if (checkForCollision(this.pos, personagemAltitude, this.floor)) {
       gameOver = true
     }
   }
@@ -113,15 +112,15 @@ function personagem (floor, context) {
   context.strokeStyle = 'red'
   context.lineWidth = 5
   let initialJumpSpeed = jumpSpeed
-  if (actualPos == 0) { actualPos = floor }
-  relativePos = (floor - actualPos)
+  if (personagemAltitude == 0) { personagemAltitude = floor }
+  let relativePos = (floor - personagemAltitude)
 
-  if (jumping && relativePos <= maxJumpHeight) { context.strokeRect(50, actualPos -= jumpSpeed > 0 ? jumpSpeed -= 35 : 1, 50, 50) } else if (floor > actualPos && !jumping) { context.strokeRect(50, actualPos += jumpSpeed > 0 ? jumpSpeed -= 35 : 1, 50, 50) } else if (!jumping) {
+  if (jumping && relativePos <= maxJumpHeight) { context.strokeRect(50, personagemAltitude -= jumpSpeed > 0 ? jumpSpeed -= 35 : 1, 50, 50) } else if (floor > personagemAltitude && !jumping) { context.strokeRect(50, personagemAltitude += jumpSpeed > 0 ? jumpSpeed -= 35 : 1, 50, 50) } else if (!jumping) {
     context.strokeRect(50, floor, 50, 50)
-    actualPos = floor
+    personagemAltitude = floor
 
-    podePula = true
-    relativePos = (floor - actualPos)
+    canJump = true
+    relativePos = (floor - personagemAltitude)
   }
   if (relativePos >= maxJumpHeight) { jumping = false }
   jumpSpeed = initialJumpSpeed
@@ -136,11 +135,11 @@ async function loop () {
   secondCactus = new CactusGenerator()
   while (!gameOver) {
     var current = new Date()
-    difference = Math.floor((current - date) / 1000)
+    timeInSecondsSinceStart = Math.floor((current - initialGameTime) / 1000)
 
-    draw(ctx, personagem, firstCactus, secondCactus)
+    draw(canvasContext, personagem, firstCactus, secondCactus)
 
-    await sleep(fps)
+    await sleep(sleepTime)
   }
 }
 

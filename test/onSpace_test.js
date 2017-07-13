@@ -13,9 +13,9 @@ define(function(require){
         })
 
         it('should set podPula as false', () => {
-            podePula = true
+            canJump = true
             onSpace()
-            podePula.should.be.equal(false)
+            canJump.should.be.equal(false)
         })
 
         it('should set gameOver as false when gameOver is true', () => {
@@ -34,20 +34,20 @@ define(function(require){
         })
 
         it('should set actualPos to 0 when gameOver is true', () => {
-            actualPos = 500
+            personagemAltitude = 500
             gameOver = true
             fn = () => {}
             onSpace(fn)
-            actualPos.should.be.equal(0)
+            personagemAltitude.should.be.equal(0)
         })
 
         it('should change high score if difference val is greater and gameOver is true', () => {
             localStorage.setItem('HighScore',0)
             gameOver = true
-            difference = 10
+            timeInSecondsSinceStart = 10
             fn = () => {}
             onSpace(fn)
-            parseInt(HighScore).should.be.equal(10)            
+            parseInt(highScore).should.be.equal(10)            
         })
 
         it('should reset date when gameOver is true', async () => {
@@ -56,7 +56,7 @@ define(function(require){
             fn = () => {}
             onSpace(fn)
             let dateTest = new Date()
-            let differenceBetweenDates = dateTest - date
+            let differenceBetweenDates = dateTest - initialGameTime
             differenceBetweenDates.should.be.lessThan(10)
         })
 
