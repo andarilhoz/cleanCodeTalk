@@ -24,9 +24,10 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       //{pattern: 'node_modules/chai/chai.js', include: true},
+      {pattern: 'lib/canteen.min.js', included:true},
       {pattern: 'js/*js', included: true},
       {pattern: 'test/*js', included: false},
-      
+
       'test/test-main.js'
     ],
 

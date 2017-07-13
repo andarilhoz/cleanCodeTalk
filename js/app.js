@@ -1,7 +1,7 @@
 
 
 var canvas = document.querySelector('#canvas') || {getContext:function(){return null}}
-var ctx = canvas.getContext('2d') 
+var ctx = canvas.getContext('2d') //|| {fillStyle}
 var date = new Date()
 var difference = 0
 var fps = 20
@@ -43,7 +43,14 @@ function onSpace(fn) {
     podePula = false
 }
 
-function draw () {
+function random(seed) {
+    var x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+}
+
+
+function draw (ctx,personagem,firstCactus,secondCactus,seed) {
+  seed = seed || Math.floor(Math.random()*100)
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
   
@@ -59,13 +66,15 @@ function draw () {
   ctx.moveTo(30, canvas.height / 2 + 70)
   ctx.lineTo(canvas.width - 30, canvas.height / 2 + 70)
   ctx.stroke()
-  
   if(firstCactus.getPos() <= 0)
-    firstCactus.updatePos(Math.floor(Math.random() * (canvas.width - secondCactus.getPos() + 200) +  secondCactus.getPos() + 200))
-  firstCactus.update()
+    firstCactus.updatePos(Math.floor(random(seed) * (canvas.width - secondCactus.getPos() + 200) +  secondCactus.getPos() + 200))
+  
+  firstCactus.update(ctx)
+  
   if(secondCactus.getPos() <= 0)
-    secondCactus.updatePos(Math.floor(Math.random() * (canvas.width - firstCactus.getPos() + 200) +  firstCactus.getPos() + 200))
-  secondCactus.update()
+    secondCactus.updatePos(Math.floor(random(seed) * (canvas.width - firstCactus.getPos() + 200) +  firstCactus.getPos() + 200))
+  
+  secondCactus.update(ctx)
 
   ctx.lineWidth = 1
   ctx.fillStyle = 'black'
@@ -74,7 +83,7 @@ function draw () {
 
   ctx.fillText('HighScore: ' + HighScore, canvas.width / 2, 100)
 
-  drawPersonagem(floor, jumpSpeed);
+  personagem(floor, jumpSpeed, ctx);
 
 }
 
@@ -86,9 +95,9 @@ function cactusGenerator () {
   this.getPos = function(){
     return this.pos
   }
-  this.update = function(){
+  this.update = function(ctx){
 
-    var floor = canvas.height / 2 
+    this.floor = canvas.height / 2 
     ctx.strokeStyle = 'green'
     ctx.lineWidth = 3
     
@@ -97,9 +106,9 @@ function cactusGenerator () {
     if(this.pos <= 0)
          this.pos =  Math.floor(Math.random() * (800-400 +1) +400)
 
-      ctx.strokeRect(this.pos-=cactusSpeed, floor, 30, 70)
+      ctx.strokeRect(this.pos-=cactusSpeed, this.floor, 30, 70)
 
-      if(checkForCollision(this.pos, actualPos,floor)){
+      if(checkForCollision(this.pos, actualPos,this.floor)){
         gameOver = true
       }
   }
@@ -129,27 +138,31 @@ function checkForCollision(objectPosW, pos, floor) { // tested
   return false
 }
 
-function drawPersonagem(floor, jumpSpeed){
-  ctx.strokeStyle = 'red'
-  ctx.lineWidth = 5
+function personagem(floor,context){
+  context.strokeStyle = 'red'
+  context.lineWidth = 5
+  let initialJumpSpeed = jumpSpeed
   if(actualPos == 0)
     actualPos = floor
   relativePos = (floor - actualPos );
   // console.log(actualPos, relativePos)
   // console.log(maxJumpHeight)
-  if(jumping && relativePos < maxJumpHeight)
-    ctx.strokeRect(50, actualPos-= jumpSpeed > 0? jumpSpeed-= 35: 1, 50, 50)
-  else if( relativePos >= maxJumpHeight)
-    jumping = false
-
-  if( floor > actualPos && !jumping){
-    ctx.strokeRect(50, actualPos+= jumpSpeed > 0  ? jumpSpeed-= 35: 1, 50, 50)
-  }else if(!jumping){
-    ctx.strokeRect(50, floor, 50, 50)
+  if(jumping && relativePos <= maxJumpHeight)
+    context.strokeRect(50, actualPos-= jumpSpeed > 0? jumpSpeed-= 35: 1, 50, 50)
+  else if( floor > actualPos && !jumping)
+    context.strokeRect(50, actualPos+= jumpSpeed > 0  ? jumpSpeed-= 35: 1, 50, 50)
+  else if(!jumping){
+  
+    context.strokeRect(50, floor, 50, 50)
     actualPos = floor
-    jumpSpeed = 10
+    jumpSpeed = 50
     podePula = true
+    relativePos = (floor - actualPos );
+
   }
+  if( relativePos >= maxJumpHeight)
+   jumping = false
+
 }
 
 
@@ -167,7 +180,7 @@ async function loop () {
     //console.log(difference)
 
 
-    draw()
+    draw(ctx,personagem,firstCactus,secondCactus)
 
     await sleep(fps)
 
