@@ -83,7 +83,7 @@ function draw (ctx,personagem,firstCactus,secondCactus,seed) {
 
   ctx.fillText('HighScore: ' + HighScore, canvas.width / 2, 100)
 
-  personagem(floor, jumpSpeed, ctx);
+  personagem(floor, ctx);
 
 }
 
@@ -152,17 +152,16 @@ function personagem(floor,context){
   else if( floor > actualPos && !jumping)
     context.strokeRect(50, actualPos+= jumpSpeed > 0  ? jumpSpeed-= 35: 1, 50, 50)
   else if(!jumping){
-  
     context.strokeRect(50, floor, 50, 50)
     actualPos = floor
-    jumpSpeed = 50
+    
     podePula = true
     relativePos = (floor - actualPos );
 
   }
   if( relativePos >= maxJumpHeight)
    jumping = false
-
+jumpSpeed = initialJumpSpeed
 }
 
 
