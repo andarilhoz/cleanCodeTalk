@@ -28,10 +28,10 @@ define(function(require){
 
     describe('Draw', () => {
         it('should set canvas size', () => {
-            canvas.width = 0
+            Manager.canvas.width = 0
             draw(ctxTest,personagemTest,firstCactusTest,secondCactusTest)
-            let widthDefined = canvas.width == window.innerWidth
-            let heightDefined = canvas.height == window.innerHeight
+            let widthDefined = Manager.canvas.width == window.innerWidth
+            let heightDefined = Manager.canvas.height == window.innerHeight
             let sizeDefined = heightDefined && widthDefined 
             sizeDefined.should.be.equal(true)
         })

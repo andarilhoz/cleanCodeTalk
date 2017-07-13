@@ -30,7 +30,7 @@ define(function(require){
             let cactusTest = new CactusGenerator()
             cactusTest.floor = 0
             cactusTest.update(ctxTest)
-            cactusTest.floor.should.be.equal(canvas.height / 2)
+            cactusTest.floor.should.be.equal(Manager.canvas.height / 2)
         })
     })
 })
