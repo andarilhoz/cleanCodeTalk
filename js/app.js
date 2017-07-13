@@ -77,7 +77,7 @@ function draw (ctx, personagem, firstCactus, secondCactus, seed) {
   personagem(floor, ctx)
 }
 
-function cactusGenerator () {
+function CactusGenerator () {
   this.pos = 0
   this.updatePos = function (val) {
     this.pos = val
@@ -132,8 +132,8 @@ function sleep (ms) {
 }
 
 async function loop () {
-  firstCactus = new cactusGenerator()
-  secondCactus = new cactusGenerator()
+  firstCactus = new CactusGenerator()
+  secondCactus = new CactusGenerator()
   while (!gameOver) {
     var current = new Date()
     difference = Math.floor((current - date) / 1000)
