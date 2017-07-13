@@ -1,6 +1,6 @@
 
 var canvas = document.querySelector('#canvas') || {getContext: function () { return null }}
-var ctx = canvas.getContext('2d') // || {fillStyle}
+var ctx = canvas.getContext('2d')
 var date = new Date()
 var difference = 0
 var fps = 20
@@ -28,7 +28,6 @@ function onSpace (fn) {
     jumping = false
     actualPos = 0
     gameOver = false
-        // cactusPos = initialCactusPos
 
     if (localStorage.getItem('HighScore') < difference) { localStorage.setItem('HighScore', difference) }
 
@@ -93,8 +92,6 @@ function cactusGenerator () {
     ctx.strokeStyle = 'green'
     ctx.lineWidth = 3
 
-    // console.log(this.pos, this.initialPos == 400 ? 'primeiro' : 'segundo')
-
     if (this.pos <= 0) { this.pos = Math.floor(Math.random() * (800 - 400 + 1) + 400) }
 
     ctx.strokeRect(this.pos -= cactusSpeed, this.floor, 30, 70)
@@ -105,21 +102,7 @@ function cactusGenerator () {
   }
 }
 
-function checkForCollision (objectPosW, pos, floor) { // tested
-  // ctx.fillStyle = 'purple'
-  // ctx.fillRect(objectPosW +2,floor,5,5);
-  // ctx.fillRect(objectPosW +32,floor,5,5);
-
-  // ctx.fillStyle = 'black'
-  // ctx.fillRect(playerPos -2,pos,5,5);
-  // ctx.fillRect(playerPos +48,pos,5,5);
-
-  // ctx.fillStyle = 'pink'
-  // ctx.fillRect(objectPosW,floor - 20,5,5)
-
-  // ctx.fillStyle = 'green'
-  // ctx.fillRect(50,pos + 50,5,5)
-
+function checkForCollision (objectPosW, pos, floor) {
   if (pos + 50 > floor - 20) {
     if ((objectPosW + 32 >= 50 - 2 && objectPosW + 2 <= 50 + 48) ||
     objectPosW + 2 >= 50 + 48 && objectPosW + 32 <= 50 - 2) { return true }
@@ -134,8 +117,7 @@ function personagem (floor, context) {
   let initialJumpSpeed = jumpSpeed
   if (actualPos == 0) { actualPos = floor }
   relativePos = (floor - actualPos)
-  // console.log(actualPos, relativePos)
-  // console.log(maxJumpHeight)
+
   if (jumping && relativePos <= maxJumpHeight) { context.strokeRect(50, actualPos -= jumpSpeed > 0 ? jumpSpeed -= 35 : 1, 50, 50) } else if (floor > actualPos && !jumping) { context.strokeRect(50, actualPos += jumpSpeed > 0 ? jumpSpeed -= 35 : 1, 50, 50) } else if (!jumping) {
     context.strokeRect(50, floor, 50, 50)
     actualPos = floor
@@ -147,7 +129,7 @@ function personagem (floor, context) {
   jumpSpeed = initialJumpSpeed
 }
 
-function sleep (ms) { // tested
+function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
@@ -157,7 +139,6 @@ async function loop () {
   while (!gameOver) {
     var current = new Date()
     difference = Math.floor((current - date) / 1000)
-    // console.log(difference)
 
     draw(ctx, personagem, firstCactus, secondCactus)
 
