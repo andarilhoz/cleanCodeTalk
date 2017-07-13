@@ -4,8 +4,6 @@ var ctx = canvas.getContext('2d')
 var date = new Date()
 var difference = 0
 var fps = 20
-var initialCactusPos = 800
-var cactusPos = 400
 var jumping = false
 var maxJumpHeight = 250
 var actualPos = 0
@@ -17,9 +15,10 @@ var HighScore = localStorage.getItem('HighScore')
 var jumpSpeed = 50
 var firstCactus
 var secondCactus
+var floor
 
 document.addEventListener('keydown', function (e) {
-  if (e.code == 'Space') { onSpace(loop) }
+  if (e.code === 'Space') { onSpace(loop) }
 })
 
 function onSpace (fn) {
@@ -50,7 +49,6 @@ function draw (ctx, personagem, firstCactus, secondCactus, seed) {
   canvas.height = window.innerHeight
 
   floor = canvas.height / 2 + 20
-  initialHeight = canvas.height / 2 + 20
 
   ctx.fillStyle = 'Grey'
   ctx.fillRect(10, 10, canvas.width - 20, canvas.height - 20)
