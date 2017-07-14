@@ -4,7 +4,6 @@ class GameManager {
     this.canvasContext = this.canvas.getContext('2d')
     this.initialGameTime = new Date()
     this.timeInSecondsSinceStart = 0
-    this.sleepTime = 20
     this.gameOver = false
     this.highScore = localStorage.getItem('HighScore')
     this.floor = this.canvas.height / 2
@@ -26,13 +25,13 @@ function onSpace () {
     Manager.player.jump()
   } else if (Manager.gameOver) {
     updateHighScore()
-    resetGameVariables()
     startGame()
   }
 }
 
 function startGame(){
   initializeGameActors()
+  resetGameVariables()
   loop()
 }
 
@@ -81,10 +80,6 @@ function updateActors () {
   Manager.player.update()
   Manager.firstCactus.update()
   Manager.secondCactus.update()
-}
-
-function sleep (ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 function draw () {
@@ -226,6 +221,7 @@ class Cactus {
     return Math.floor(Math.random() * (maxDistance - minimumDistance) + minimumDistance)
   }
 }
+
 function getLastCactusPos(){
   if(Manager.firstCactus.pos > Manager.secondCactus.pos)
     return Manager.firstCactus.pos
