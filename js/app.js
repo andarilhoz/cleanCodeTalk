@@ -18,17 +18,22 @@ class GameManager {
 var Manager = new GameManager()
 
 document.addEventListener('keydown', function (e) {
-  if (e.code === 'Space') { onSpace(loop) }
+  if (e.code === 'Space') { onSpace() }
 })
 
-function onSpace (loop) {
+function onSpace () {
   if (Manager.player.canJump && !Manager.gameOver) {
     Manager.player.jump()
   } else if (Manager.gameOver) {
     updateHighScore()
     resetGameVariables()
-    loop()
+    startGame()
   }
+}
+
+function startGame(){
+  initializeGameActors()
+  loop()
 }
 
 function updateHighScore () {
@@ -45,13 +50,12 @@ function resetGameVariables () {
 }
 
 async function loop () {
-  initializeGameActors()
-  while (!Manager.gameOver) {
+  if(!Manager.gameOver) {
     updateManagerScreenVariables()
     setGameTime()
     draw(Manager.canvasContext)
     updateActors()
-    await sleep(Manager.sleepTime)
+    window.requestAnimationFrame(loop)
   }
 }
 
@@ -144,6 +148,7 @@ class Player {
     this.ableJumpWhenHitFloor()
     this.startFallingWhenHitMaxHeight()
     this.resetJumpSpeed()
+    console.log(Manager.floor + 15)
   }
 
   updatePlayerPos () {
@@ -234,4 +239,4 @@ function checkForCollision (objectFace, pos, floor) {
   return false
 }
 
-loop()
+startGame()
