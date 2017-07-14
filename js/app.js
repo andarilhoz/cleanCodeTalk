@@ -23,8 +23,7 @@ document.addEventListener('keydown', function (e) {
 
 function onSpace(loop) {
   if (Manager.player.canJump && !Manager.gameOver){
-    Manager.player.jumping = true
-    Manager.player.canJump = false
+    Manager.player.jump()
   }
   else if (Manager.gameOver) {
     updateHighScore()
@@ -37,13 +36,12 @@ function updateHighScore(){
   if (localStorage.getItem('HighScore') < Manager.timeInSecondsSinceStart) { 
     localStorage.setItem('HighScore', Manager.timeInSecondsSinceStart) 
   }
+  Manager.highScore = localStorage.getItem('HighScore')
 }
 
 function resetGameVariables(){
-    Manager.player.jumping = false
-    Manager.player.personagemAltitude = 0
+    Manager.player.resetVariables()
     Manager.gameOver = false
-    Manager.highScore = localStorage.getItem('HighScore')
     Manager.initialGameTime = new Date()
 }
 
@@ -51,6 +49,7 @@ async function loop() {
   initializeGameActors()
   while (!Manager.gameOver) {
     updateManagerScreenVariables()
+    setGameTime()
     draw(Manager.canvasContext)
     updateActors()
     await sleep(Manager.sleepTime)
@@ -64,12 +63,15 @@ function initializeGameActors(){
 }
 
 function updateManagerScreenVariables(){
-  let currentGameTime = new Date()
   Manager.floor = Manager.canvas.height / 2
   Manager.horizontalSplitScreen = Manager.canvas.width / 2
-  Manager.timeInSecondsSinceStart = Math.floor((currentGameTime - Manager.initialGameTime) / 1000)
   Manager.canvas.width = window.innerWidth
   Manager.canvas.height = window.innerHeight
+}
+
+function setGameTime(){
+  let currentGameTime = new Date()
+  Manager.timeInSecondsSinceStart = Math.floor((currentGameTime - Manager.initialGameTime) / 1000)
 }
 
 function updateActors() {
@@ -126,7 +128,6 @@ function drawPlayer(verticalPos){
     Manager.canvasContext.strokeRect(50, verticalPos, 50, 50)
 }
 
-
 class Player {
   constructor() {
     this.jumping = false
@@ -181,6 +182,15 @@ class Player {
     this.jumpSpeed = 50
   }
 
+  jump(){
+    Manager.player.jumping = true
+    Manager.player.canJump = false
+  }
+
+  resetVariables(){
+    this.jumping = false
+    this.personagemAltitude = 0
+  }
 }
 
 class Cactus {
