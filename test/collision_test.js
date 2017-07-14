@@ -1,7 +1,7 @@
 define(function(require){
     describe('Collision checker', () => {
         it('Should return false when not colliding', () => {
-            let colliding = checkForCollision(0,400,400)
+            let colliding = checkForCollision(600,400,400)
             colliding.should.be.equal(false)
         })
 

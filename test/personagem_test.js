@@ -18,18 +18,20 @@ define(function(require){
     Manager.player  = new Player ()
     describe('Personagem ', () => {
         it('Should be at pos 666 when given in floor paramter, and personagemAltitude is 0', () => {
+            let playerWidth = 15
             Manager.floor = 666
             Manager.player.update()
-            Manager.player.personagemAltitude.should.be.equal(666)
+            Manager.player.personagemAltitude.should.be.equal(666 + playerWidth)
         })
 
         it('relative pos should be 0, when not jumping and not falling', () => {
+            let playerWidth = 15
             Manager.player.jumping  = false
             Manager.player.canJump = false
             Manager.floor = 666
             Manager.player.personagemAltitude = 999
             Manager.player.update()
-            Manager.player.personagemAltitude.should.be.equal(666)
+            Manager.player.personagemAltitude.should.be.equal(666 + playerWidth)
             Manager.player.canJump.should.be.true
         })        
 
@@ -53,6 +55,7 @@ define(function(require){
             Manager.player.personagemAltitude = 400
             Manager.player.jumpSpeed = 50
             Manager.player.jumping = false
+            draw()
             Manager.player.update()
             Manager.player.personagemAltitude.should.be.greaterThan(400)
         })
