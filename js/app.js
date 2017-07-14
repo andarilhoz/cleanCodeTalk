@@ -225,7 +225,10 @@ function checkForCollision (objectFace, pos, floor) {
   let playerFace = 50 + 48
   let objectIsAtPlayerFace = objectFace <= playerFace
 
-  if (playerIsAtCactusHightRange && objectIsAtPlayerFace) {
+  let playerBack = 50 - 2
+  let objectDidNotPassByPlayer = playerBack < objectFace + 30
+
+  if (playerIsAtCactusHightRange &&(objectIsAtPlayerFace && objectDidNotPassByPlayer) ) {
     return true
   }
   return false
