@@ -1,5 +1,5 @@
 class GameManager {
-  constructor() {
+  constructor () {
     this.canvas = document.querySelector('#canvas') || { getContext: function () { return null } }
     this.canvasContext = this.canvas.getContext('2d')
     this.initialGameTime = new Date()
@@ -15,37 +15,36 @@ class GameManager {
   }
 }
 
-var Manager = new GameManager();
+var Manager = new GameManager()
 
 document.addEventListener('keydown', function (e) {
   if (e.code === 'Space') { onSpace(loop) }
 })
 
-function onSpace(loop) {
+function onSpace (loop) {
   if (Manager.player.canJump && !Manager.gameOver) {
     Manager.player.jump()
-  }
-  else if (Manager.gameOver) {
+  } else if (Manager.gameOver) {
     updateHighScore()
     resetGameVariables()
     loop()
   }
 }
 
-function updateHighScore() {
+function updateHighScore () {
   if (localStorage.getItem('HighScore') < Manager.timeInSecondsSinceStart) {
     localStorage.setItem('HighScore', Manager.timeInSecondsSinceStart)
   }
   Manager.highScore = localStorage.getItem('HighScore')
 }
 
-function resetGameVariables() {
+function resetGameVariables () {
   Manager.player.resetVariables()
   Manager.gameOver = false
   Manager.initialGameTime = new Date()
 }
 
-async function loop() {
+async function loop () {
   initializeGameActors()
   while (!Manager.gameOver) {
     updateManagerScreenVariables()
@@ -56,35 +55,35 @@ async function loop() {
   }
 }
 
-function initializeGameActors() {
+function initializeGameActors () {
   Manager.firstCactus = new Cactus()
   Manager.secondCactus = new Cactus()
   Manager.player = new Player()
 }
 
-function updateManagerScreenVariables() {
+function updateManagerScreenVariables () {
   Manager.floor = Manager.canvas.height / 2
   Manager.horizontalSplitScreen = Manager.canvas.width / 2
   Manager.canvas.width = window.innerWidth
   Manager.canvas.height = window.innerHeight
 }
 
-function setGameTime() {
+function setGameTime () {
   let currentGameTime = new Date()
   Manager.timeInSecondsSinceStart = Math.floor((currentGameTime - Manager.initialGameTime) / 1000)
 }
 
-function updateActors() {
+function updateActors () {
   Manager.player.update()
   Manager.firstCactus.update()
   Manager.secondCactus.update()
 }
 
-function sleep(ms) {
+function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-function draw() {
+function draw () {
   drawFloor()
   drawBackGround()
   drawGUI()
@@ -93,7 +92,7 @@ function draw() {
   drawPlayer(Manager.player.personagemAltitude)
 }
 
-function drawFloor() {
+function drawFloor () {
   Manager.canvasContext.lineWidth = 5
   Manager.canvasContext.strokeStyle = 'yellow'
   Manager.canvasContext.moveTo(30, Manager.floor + 70)
@@ -101,13 +100,13 @@ function drawFloor() {
   Manager.canvasContext.stroke()
 }
 
-function drawBackGround() {
+function drawBackGround () {
   Manager.canvasContext.fillStyle = 'Grey'
   Manager.canvasContext.fillRect(10, 10, Manager.canvas.width - 20, Manager.canvas.height - 20)
   Manager.canvasContext.stroke()
 }
 
-function drawGUI() {
+function drawGUI () {
   Manager.canvasContext.lineWidth = 1
   Manager.canvasContext.fillStyle = 'black'
   Manager.canvasContext.font = '30px Arial'
@@ -116,20 +115,20 @@ function drawGUI() {
   Manager.canvasContext.fillText('HighScore: ' + Manager.highScore, Manager.horizontalSplitScreen, 100)
 }
 
-function drawCactus(pos) {
+function drawCactus (pos) {
   Manager.canvasContext.strokeStyle = 'green'
   Manager.canvasContext.lineWidth = 3
   Manager.canvasContext.strokeRect(pos, Manager.floor, 30, 70)
 }
 
-function drawPlayer(verticalPos) {
+function drawPlayer (verticalPos) {
   Manager.canvasContext.strokeStyle = 'red'
   Manager.canvasContext.lineWidth = 5
   Manager.canvasContext.strokeRect(50, verticalPos, 50, 50)
 }
 
 class Player {
-  constructor() {
+  constructor () {
     this.jumping = false
     this.playerSpeed = 5
     this.maxJumpHeight = 250
@@ -140,14 +139,14 @@ class Player {
     this.playerFloor
   }
 
-  update() {
+  update () {
     this.updatePlayerPos()
     this.ableJumpWhenHitFloor()
     this.startFallingWhenHitMaxHeight()
     this.resetJumpSpeed()
   }
 
-  updatePlayerPos() {
+  updatePlayerPos () {
     this.personagemAltitude = this.personagemAltitude || Manager.floor
 
     let jumpSpeedFixed = this.jumpSpeed > 0 ? this.jumpSpeed -= 35 : 1
@@ -168,63 +167,60 @@ class Player {
     this.relativePos = (playerFloorCorrection - this.personagemAltitude)
   }
 
-  ableJumpWhenHitFloor() {
-    if (!this.jumping && this.relativePos == 0)
-      this.canJump = true
+  ableJumpWhenHitFloor () {
+    if (!this.jumping && this.relativePos === 0) { this.canJump = true }
   }
 
-  startFallingWhenHitMaxHeight() {
-    if (this.relativePos >= this.maxJumpHeight)
-      this.jumping = false
+  startFallingWhenHitMaxHeight () {
+    if (this.relativePos >= this.maxJumpHeight) { this.jumping = false }
   }
 
-  resetJumpSpeed() {
+  resetJumpSpeed () {
     this.jumpSpeed = 50
   }
 
-  jump() {
+  jump () {
     Manager.player.jumping = true
     Manager.player.canJump = false
   }
 
-  resetVariables() {
+  resetVariables () {
     this.jumping = false
     this.personagemAltitude = 0
   }
 }
 
 class Cactus {
-  constructor() {
+  constructor () {
     this.pos = 0
   }
 
-  update() {
+  update () {
     this.updatePos()
     this.checkCollisionWithPlayer()
   }
 
-  updatePos() {
-    if (this.pos <= 0)
-      this.pos = this.getRandomSpawn()
+  updatePos () {
+    if (this.pos <= 0) { this.pos = this.getRandomSpawn() }
 
-    this.pos = this.pos || getRandomSpawn(new Date())
+    this.pos = this.pos || this.getRandomSpawn(new Date())
     this.pos -= Manager.player.playerSpeed
   }
 
-  checkCollisionWithPlayer() {
+  checkCollisionWithPlayer () {
     if (checkForCollision(this.pos, Manager.player.personagemAltitude, Manager.floor)) {
       Manager.gameOver = true
     }
   }
 
-  getRandomSpawn(seed) {
+  getRandomSpawn (seed) {
     let minimumDistanceFromPlayer = 400
     let width = Manager.canvas.width || minimumDistanceFromPlayer
     return Math.floor(Math.random() * (width - minimumDistanceFromPlayer) + minimumDistanceFromPlayer)
   }
 }
 
-function checkForCollision(objectFace, pos, floor) {
+function checkForCollision (objectFace, pos, floor) {
   let playerIsAtCactusHightRange = pos + 30 > floor - 10
   let playerFace = 50 + 48
   let objectIsAtPlayerFace = objectFace <= playerFace
