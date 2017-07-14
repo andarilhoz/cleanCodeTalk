@@ -10,14 +10,14 @@ define(function(require){
         fillText: () => {}
     }
     Manager.canvasContext = ctxTest
-    personagemTest = () => {
-        this.called = false
+    Manager.canvas = {
+        width: 200,
+        height: 200
     }
-
     describe('Draw', () => {
         it('should set canvas size', () => {
             Manager.canvas.width = 0
-            draw(ctxTest)
+            updateManagerScreenVariables()
             let widthDefined = Manager.canvas.width == window.innerWidth
             let heightDefined = Manager.canvas.height == window.innerHeight
             let sizeDefined = heightDefined && widthDefined 
