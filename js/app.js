@@ -148,7 +148,6 @@ class Player {
     this.ableJumpWhenHitFloor()
     this.startFallingWhenHitMaxHeight()
     this.resetJumpSpeed()
-    console.log(Manager.floor + 15)
   }
 
   updatePlayerPos () {
@@ -157,11 +156,11 @@ class Player {
     let jumpSpeedFixed = this.jumpSpeed > 0 ? this.jumpSpeed -= 35 : 1
     let playerFloorCorrection = Manager.floor + 15
 
-    let playerIsJumping = this.jumping && this.relativePos <= this.maxJumpHeight
+    let playerIsGoingUp = this.jumping && this.relativePos <= this.maxJumpHeight
     let playerIsFalling = playerFloorCorrection > this.personagemAltitude && !this.jumping
     let playerIsIdle = !this.jumping
 
-    if (playerIsJumping) {
+    if (playerIsGoingUp) {
       this.personagemAltitude -= jumpSpeedFixed
     } else if (playerIsFalling) {
       this.personagemAltitude += jumpSpeedFixed
@@ -219,18 +218,26 @@ class Cactus {
   }
 
   getRandomSpawn (seed) {
-    let minimumDistanceFromPlayer = 400
-    let width = Manager.canvas.width || minimumDistanceFromPlayer
-    return Math.floor(Math.random() * (width - minimumDistanceFromPlayer) + minimumDistanceFromPlayer)
+    let minimumDistanceFromPlayer = 200
+    let lastCactusPos = getLastCactusPos()
+    let maxDistanceFromPlayer = Manager.canvas.width || minimumDistanceFromPlayer
+    let minimumDistance = minimumDistanceFromPlayer + lastCactusPos 
+    let maxDistance = lastCactusPos + maxDistanceFromPlayer
+    return Math.floor(Math.random() * (maxDistance - minimumDistance) + minimumDistance)
   }
+}
+function getLastCactusPos(){
+  if(Manager.firstCactus.pos > Manager.secondCactus.pos)
+    return Manager.firstCactus.pos
+  return Manager.secondCactus.pos
 }
 
 function checkForCollision (objectFace, pos, floor) {
-  let playerIsAtCactusHightRange = pos + 30 > floor - 10
-  let playerFace = 50 + 48
+  let playerIsAtCactusHightRange = pos + 40 > floor 
+  let playerFace = 98
   let objectIsAtPlayerFace = objectFace <= playerFace
 
-  let playerBack = 50 - 2
+  let playerBack = 48
   let objectDidNotPassByPlayer = playerBack < objectFace + 30
 
   if (playerIsAtCactusHightRange &&(objectIsAtPlayerFace && objectDidNotPassByPlayer) ) {
